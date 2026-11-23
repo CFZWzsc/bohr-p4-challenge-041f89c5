@@ -1,0 +1,46 @@
+{
+  "case_id": "demo-proposal-001",
+  "title": "Synthetic demo: CRISPR screen for CAR-T persistence",
+  "proposal": "A CRISPR knockout screen will identify genes that improve the persistence rate of CAR-T cells versus standard CAR-T therapy in adult patients.",
+  "prior_art": [
+    {
+      "source_id": "A1",
+      "title": "CRISPR knockout screens in CAR-T cells",
+      "abstract": "Synthetic demonstration record: CRISPR knockout screens identified regulators of the CAR-T persistence rate in primary T cells. Persistence improved in the screened arm.",
+      "year": 2021,
+      "venue": "Synthetic Demo Journal",
+      "doi": "10.0000/demo.a1"
+    },
+    {
+      "source_id": "A2",
+      "title": "CAR-T persistence without genetic screening",
+      "abstract": "Synthetic demonstration record: standard CAR-T therapy showed no significant improvement in the persistence rate compared with the control cohort.",
+      "year": 2023,
+      "venue": "Synthetic Demo Journal",
+      "doi": "10.0000/demo.a2"
+    },
+    {
+      "source_id": "A3",
+      "title": "Commentary on emerging cell therapies"
+    }
+  ],
+  "resources": {
+    "data": "primary T cells from consented donors",
+    "sample_size": 20,
+    "time_months": 12,
+    "equipment": "sequencing and flow cytometry",
+    "ethics": "IRB approved for the synthetic demo"
+  },
+  "output_contract": {
+    "testable_form": "object: restated, measurable proposal",
+    "novelty_assessment": "object: batch-bounded novelty score",
+    "comparison": "array: per-record comparison rows",
+    "innovation_checks": "array: each innovation statement with covered_by and verdict",
+    "conflicting_evidence": "array: opposing outcome reports kept unresolved",
+    "feasibility": "object: checks, blockers, warnings, verdict",
+    "synthesis": "object: conditional go/hold with conditions",
+    "research_gaps": "array: batch-bounded gaps",
+    "needs_human_confirmation": "array: items that require full text or expert check",
+    "status": "string: run status"
+  }
+}
