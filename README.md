@@ -9,7 +9,7 @@ answers, private data or credentials are included.
 ## Skill
 
 - Name: `research-proposal-novelty-assessment`
-- Summary: Use when a proposed research idea must be assessed before funding or execution, requiring a falsifiable restatement, lexical prior-art overlap with an explicit non-global caveat, differentiators, feasibility checks against declared resources, typed risks, revisions and a transparent scorecard.
+- Summary: Use when a research idea must be assessed before funding or execution: falsifiable restatement, batch-bounded prior-art overlap, differentiators, feasibility checks, typed risks and revisions.
 
 ## Contents
 
