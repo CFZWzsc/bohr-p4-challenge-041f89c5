@@ -1,0 +1,43 @@
+{
+  "version": "1.0.0",
+  "description": "Deterministic policy for the research-proposal novelty and feasibility skill. Thresholds are applied mechanically by scripts/sk_entry.py; no network or model call is made.",
+  "overlap": {
+    "direct_threshold": 0.45,
+    "partial_threshold": 0.25,
+    "phrase_bonus": 0.08,
+    "rule": "share of proposal content terms found in a record's title/abstract, plus a small bonus for shared two-word phrases"
+  },
+  "caps": {
+    "proposal_terms": 20,
+    "quote_chars": 240,
+    "max_comparison_rows": 200,
+    "max_differentiators": 15,
+    "max_manifest_files": 200,
+    "manifest_hash_bytes": 1048576
+  },
+  "status": {
+    "success": "a proposal and at least one prior-art record are present, the proposal is falsifiable as written, and resources are declared",
+    "partial": "the proposal or the prior-art batch is present but falsifiability, resources or comparison coverage is incomplete",
+    "insufficient_input": "no proposal or no prior-art record was supplied, so no novelty statement is made",
+    "failed": "the case file could not be read or the analysis raised an unhandled error"
+  },
+  "evidence": {
+    "locator_rule": "locators are JSON pointers into the supplied case.json (for example /prior_art/0), never page numbers of a generated document",
+    "quote_rule": "quotes are exact substrings of the cited field; truncation keeps a prefix and sets truncated=true",
+    "unverifiable_rule": "a statement without a locator goes to needs_human_confirmation instead of evidence"
+  },
+  "no_fabrication": [
+    "never invent papers, years, DOIs, sample sizes, ethics approvals or effect sizes",
+    "never turn an empty batch into a claim of global novelty",
+    "never turn a batch-missing conflict into agreement"
+  ],
+  "source_declaration": "All sources are the records supplied in the case file; the skill performs no external retrieval and does not verify that the records exist.",
+  "limits": {
+    "max_files": 50,
+    "max_file_bytes": 500000,
+    "max_total_bytes": 2097152,
+    "network": false,
+    "stdlib_only": true,
+    "deterministic": true
+  }
+}
