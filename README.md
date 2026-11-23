@@ -3,33 +3,43 @@
 Bohrium Playground Period 4 submission — challenge `challenge-041f89c5` (track: `deep-research-literature-review`).
 
 This repository holds the complete skill package for the challenge: the skill
-definition, its executable entry point and all supporting scripts. No precomputed
+definition, its executable pipeline and all supporting documents. No precomputed
 answers, private data or credentials are included.
 
 ## Skill
 
 - Name: `research-proposal-novelty-assessment`
-- Summary: Use when a research idea must be assessed before funding or execution: falsifiable restatement, batch-bounded prior-art overlap, differentiators, feasibility checks, typed risks and revisions.
+- Summary: Use when a research idea must be judged before funding or execution — restate it as a falsifiable claim, compare it record by record with a supplied prior-art batch, mark each innovation statement as covered or not found, check feasibility against declared resources, keep conflicting evidence unresolved, and write a contract-complete result.json. Runs offline with the Python standard library only.
 
 ## Contents
 
 | File |
 |------|
 | `SKILL.md` |
+| `assets/policy.json` |
+| `examples/demo-case/case.json` |
+| `examples/quickstart.md` |
+| `references/evidence-discipline.md` |
+| `references/method.md` |
+| `references/task-spec.md` |
 | `scripts/run_skill.py` |
+| `scripts/sk_entry.py` |
 | `README.md` |
 
 ## How to run
 
 ```bash
-python scripts/run_skill.py --case /input/case.json --output /app/output/result.json
+python scripts/sk_entry.py --input /input --work /app/work --out /app/output
 ```
 
-The entry point is `SKILL.md`; input/output contracts, error handling and a minimal
-usage example are documented there.
+A single deterministic pass reads `/input`, computes the deliverable and writes a
+contract-complete `/app/output/result.json` plus the human-readable review files
+described in `SKILL.md`. The same input always produces byte-identical output; no
+network access is used, and fields the materials cannot support are reported
+explicitly instead of being left empty.
 
 ## Notes
 
 - Pure Python standard library; no network access required.
-- The result JSON keeps the input case id, the main results, per-item evidence,
-  a run status and an uncertainty section.
+- Every claim is anchored to paragraph-level evidence; unknown items are reported
+  in `uncertainty` instead of being fabricated.
