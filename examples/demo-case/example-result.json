@@ -1,0 +1,1215 @@
+{
+  "example_note": "TOY / DEMO OUTPUT — generated from the synthetic files in examples/demo-case (3 records, 2 toy source files). It is not an official case result, not a real literature review, and carries no score. Regenerate it with the quickstart command; the byte content is deterministic.",
+  "example_scope": "demo-only; every record, DOI-free identifier and source file in the demo is synthetic",
+  "case_id": "demo-proposal-001",
+  "status": "success",
+  "result": {
+    "proposal": "A CRISPR knockout screen will identify genes that improve the persistence rate of CAR-T cells versus standard CAR-T therapy in adult patients.",
+    "review_report": "一、总体结论。案例 demo-proposal-001 的运行状态为 success。研究设想被改写为「In adult patients, test whether CRISPR knockout screen changes persistence rate relative to standard CAR-T therapy」；可检验性判为可检验，结局指标与对照均已给出。批内新颖度为 low（9 分），与本批最近工作的词项重叠为 0.72；可行性判为 feasible_with_conditions；综合建议为 hold。以上判断只覆盖输入提供的材料，不构成全局查新、专利检索或资助结论。\n\n二、五面小结。题面要求的问题定义、已有工作比较、创新点识别、可行性判断与证据回链共 5 个面，5 个面已检查，0 个面因材料不足记为 gap（问题定义=checked、已有工作比较=checked、创新点识别=checked、可行性判断=checked、证据回链=checked）。\n\n三、材料与筛选。输入目录内解析到 2 份原文；题录共 3 条，去重后 3 条，纳入筛选 3 条，纳入比较 3 条；证据条目 4 条，其中 2 条已定位到源文件段落（形如 S1#P2），其余回到 JSON 指针。\n\n四、问题清单。共记录 10 条评审意见：critical 1 条、major 9 条、minor 0 条。最需要先处理的是 F01（question_definition，major）：把「improve」替换为可操作的量化定义，或直接删去该措辞。\n\n五、待复核。read the full text of A3［/prior_art/2］；operationalise 'improve'［/proposal］；check the closest work A1 in full text［S1#P1］；adjudicate the conflicting outcome reports［/］\n\n六、使用边界。本报告由确定性脚本在离线环境生成，阈值与分级口径见 references/method.md；证据定位符 /prior_art/0 指向 case.json 字段，S1#P2 指向输入目录下第 1 份源文件的第 2 段。",
+    "aspect_coverage": [
+      {
+        "aspect": "question_definition",
+        "label": "问题定义",
+        "status": "checked",
+        "findings": 1,
+        "severity_max": "major",
+        "note": "1 issue(s) recorded against this aspect"
+      },
+      {
+        "aspect": "prior_work_comparison",
+        "label": "已有工作比较",
+        "status": "checked",
+        "findings": 3,
+        "severity_max": "critical",
+        "note": "3 issue(s) recorded against this aspect"
+      },
+      {
+        "aspect": "novelty_identification",
+        "label": "创新点识别",
+        "status": "checked",
+        "findings": 3,
+        "severity_max": "major",
+        "note": "3 issue(s) recorded against this aspect"
+      },
+      {
+        "aspect": "feasibility_judgment",
+        "label": "可行性判断",
+        "status": "checked",
+        "findings": 1,
+        "severity_max": "major",
+        "note": "1 issue(s) recorded against this aspect"
+      },
+      {
+        "aspect": "evidence_traceback",
+        "label": "证据回链",
+        "status": "checked",
+        "findings": 2,
+        "severity_max": "major",
+        "note": "2 issue(s) recorded against this aspect"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "F01",
+        "aspect": "question_definition",
+        "category": "norm_issue",
+        "severity": "major",
+        "quote": "improve",
+        "location": "/proposal",
+        "evidence": [],
+        "revision_suggestion": "把「improve」替换为可操作的量化定义，或直接删去该措辞。",
+        "status": "confirmed"
+      },
+      {
+        "finding_id": "F02",
+        "aspect": "prior_work_comparison",
+        "category": "norm_issue",
+        "severity": "critical",
+        "quote": "# CRISPR knockout screens in CAR-T cells Synthetic demonstration record: CRISPR knockout screens identified regulators of the CAR-T persistence rate in primary",
+        "location": "S1#P1",
+        "evidence": [
+          "E02"
+        ],
+        "revision_suggestion": "在提案中逐条写明与 A1 的方法、数据或结论差异，否则重叠会被读成重复工作。",
+        "status": "confirmed"
+      },
+      {
+        "finding_id": "F03",
+        "aspect": "prior_work_comparison",
+        "category": "norm_issue",
+        "severity": "major",
+        "quote": "# CAR-T persistence without genetic screening Synthetic demonstration record: standard CAR-T therapy showed no significant improvement in the persistence rate",
+        "location": "S2#P1",
+        "evidence": [
+          "E03"
+        ],
+        "revision_suggestion": "在提案中逐条写明与 A2 的方法、数据或结论差异，否则重叠会被读成重复工作。",
+        "status": "confirmed"
+      },
+      {
+        "finding_id": "F04",
+        "aspect": "prior_work_comparison",
+        "category": "insufficient_evidence",
+        "severity": "major",
+        "quote": "Commentary on emerging cell therapies",
+        "location": "/prior_art/2",
+        "evidence": [
+          "E04"
+        ],
+        "revision_suggestion": "补全该记录的摘要、年份或全文后重新比较，不要以标题级信息下结论。",
+        "status": "pending"
+      },
+      {
+        "finding_id": "F05",
+        "aspect": "novelty_identification",
+        "category": "fact_error",
+        "severity": "major",
+        "quote": "# CRISPR knockout screens in CAR-T cells Synthetic demonstration record: CRISPR knockout screens identified regulators of the CAR-T persistence rate in primary",
+        "location": "S1#P1",
+        "evidence": [
+          "E02",
+          "E03"
+        ],
+        "revision_suggestion": "该创新陈述（the proposed intervention (crispr, knockout, screen, car-t) is itself novel）已被批内记录覆盖或部分覆盖；改写为未被覆盖的差异点或撤回。",
+        "status": "confirmed"
+      },
+      {
+        "finding_id": "F06",
+        "aspect": "novelty_identification",
+        "category": "fact_error",
+        "severity": "major",
+        "quote": "# CRISPR knockout screens in CAR-T cells Synthetic demonstration record: CRISPR knockout screens identified regulators of the CAR-T persistence rate in primary",
+        "location": "S1#P1",
+        "evidence": [
+          "E02",
+          "E03"
+        ],
+        "revision_suggestion": "该创新陈述（the stated outcome (persistence rate) has not been measured before）已被批内记录覆盖或部分覆盖；改写为未被覆盖的差异点或撤回。",
+        "status": "confirmed"
+      },
+      {
+        "finding_id": "F07",
+        "aspect": "novelty_identification",
+        "category": "fact_error",
+        "severity": "major",
+        "quote": "# CRISPR knockout screens in CAR-T cells Synthetic demonstration record: CRISPR knockout screens identified regulators of the CAR-T persistence rate in primary",
+        "location": "S1#P1",
+        "evidence": [
+          "E02",
+          "E03"
+        ],
+        "revision_suggestion": "该创新陈述（the intervention x outcome combination is unoccupied）已被批内记录覆盖或部分覆盖；改写为未被覆盖的差异点或撤回。",
+        "status": "confirmed"
+      },
+      {
+        "finding_id": "F08",
+        "aspect": "feasibility_judgment",
+        "category": "insufficient_evidence",
+        "severity": "major",
+        "quote": "",
+        "location": "/resources",
+        "evidence": [],
+        "revision_suggestion": "methods_supported：declared resources do not mention: crispr；在提案中补齐该前提，或把它明确标为假设。",
+        "status": "pending"
+      },
+      {
+        "finding_id": "F09",
+        "aspect": "evidence_traceback",
+        "category": "insufficient_evidence",
+        "severity": "major",
+        "quote": "",
+        "location": "/prior_art/2",
+        "evidence": [],
+        "revision_suggestion": "有 1 条纳入记录未匹配到输入目录下的原文；取得原文或 PDF 后重跑，使定位从 JSON 指针升级为源文件段落（如 S1#P2）。",
+        "status": "pending"
+      },
+      {
+        "finding_id": "F10",
+        "aspect": "evidence_traceback",
+        "category": "insufficient_evidence",
+        "severity": "major",
+        "quote": "# CRISPR knockout screens in CAR-T cells Synthetic demonstration record: CRISPR knockout screens identified regulators of the CAR-T persistence rate in primary T cells. Persistence improved in the screened arm. Methods (synthetic): pooled",
+        "location": "S1#P1",
+        "evidence": [],
+        "revision_suggestion": "相反结论并列保留；补齐研究设计与效应量字段后再裁决，不要单边取舍。",
+        "status": "pending"
+      }
+    ],
+    "severity_rubric": {
+      "declared_at": "precheck",
+      "scale": "critical > major > minor",
+      "levels": [
+        {
+          "level": "critical",
+          "definition": "the proposal cannot be defended as written: a feasibility blocker, a non-falsifiable claim, or an innovation statement already covered by a supplied record",
+          "action": "resolve before any go decision"
+        },
+        {
+          "level": "major",
+          "definition": "a claim needs a stated boundary, comparator, full-text check or source that is currently missing",
+          "action": "revise the proposal text or obtain the missing material"
+        },
+        {
+          "level": "minor",
+          "definition": "presentation or traceability gap that does not change the verdict",
+          "action": "fix in the next revision"
+        }
+      ],
+      "category_enum": [
+        "fact_error",
+        "insufficient_evidence",
+        "norm_issue",
+        "suggestion"
+      ],
+      "status_enum": [
+        "confirmed",
+        "pending"
+      ],
+      "note": "levels are declared before any finding is produced so each finding is read against a fixed scale"
+    },
+    "testable_form": {
+      "restated": "In adult patients, test whether CRISPR knockout screen changes persistence rate relative to standard CAR-T therapy",
+      "population_hint": "adult patients",
+      "comparator_hint": "standard CAR-T therapy",
+      "intervention_terms": [
+        "crispr",
+        "knockout",
+        "screen",
+        "car-t"
+      ],
+      "outcome_indicators": [
+        "persistence rate"
+      ],
+      "has_comparator": true,
+      "vague_terms": [
+        "improve"
+      ],
+      "tests": {
+        "has_outcome_measure": true,
+        "has_comparator": true,
+        "has_population": true,
+        "is_falsifiable": true
+      }
+    },
+    "novelty_assessment": {
+      "score": 9,
+      "level": "low",
+      "best_overlap": 0.72,
+      "close_works": 2,
+      "scope": "lexical overlap with the supplied prior-art batch only; this is not a global novelty search"
+    },
+    "prior_art_table": [
+      {
+        "source_id": "A1",
+        "title": "CRISPR knockout screens in CAR-T cells",
+        "year": 2021,
+        "shared_terms": [
+          "crispr",
+          "knockout",
+          "persistence",
+          "rate",
+          "car-t",
+          "cells"
+        ],
+        "shared_phrases": [
+          "car-t cells",
+          "crispr knockout",
+          "persistence rate",
+          "t cells"
+        ],
+        "overlap": 0.72,
+        "relation": "direct_overlap"
+      },
+      {
+        "source_id": "A2",
+        "title": "CAR-T persistence without genetic screening",
+        "year": 2023,
+        "shared_terms": [
+          "persistence",
+          "rate",
+          "car-t",
+          "standard",
+          "therapy"
+        ],
+        "shared_phrases": [
+          "persistence rate"
+        ],
+        "overlap": 0.413,
+        "relation": "partial_overlap"
+      },
+      {
+        "source_id": "A3",
+        "title": "Commentary on emerging cell therapies",
+        "year": null,
+        "shared_terms": [],
+        "shared_phrases": [],
+        "overlap": 0.0,
+        "relation": "adjacent"
+      }
+    ],
+    "differentiators": [
+      "screen",
+      "identify",
+      "genes",
+      "improve",
+      "versus",
+      "adult",
+      "patients"
+    ],
+    "style_notes": {
+      "note": "single function words or generic verbs found only in the proposal are recorded here and are not counted as innovation claims",
+      "terms": [
+        "identify",
+        "genes",
+        "versus",
+        "adult",
+        "patients"
+      ]
+    },
+    "feasibility": {
+      "checks": [
+        {
+          "check": "data_available",
+          "status": "pass",
+          "detail": "declared data: primary T cells from consented donors"
+        },
+        {
+          "check": "time",
+          "status": "pass",
+          "detail": "12 month(s) available"
+        },
+        {
+          "check": "methods_supported",
+          "status": "warning",
+          "detail": "declared resources do not mention: crispr"
+        },
+        {
+          "check": "ethics",
+          "status": "pass",
+          "detail": "human/animal work detected; ethics/consent declared"
+        }
+      ],
+      "blockers": [],
+      "warnings": [
+        "methods_supported"
+      ],
+      "verdict": "feasible_with_conditions"
+    },
+    "risks": [
+      {
+        "type": "prior_art_crowding",
+        "severity": "high",
+        "detail": "the closest supplied work overlaps 0.72 of proposal terms"
+      },
+      {
+        "type": "vague_constructs",
+        "severity": "medium",
+        "detail": "vague terms without an operational definition: improve"
+      }
+    ],
+    "recommended_revisions": [
+      "Replace vague terms (improve) with operational definitions.",
+      "Reframe to a differentiator not covered by the closest works, or change the comparison."
+    ],
+    "research_gaps": [
+      {
+        "type": "title_only_records",
+        "basis": "records without an abstract or a source file cannot support a method-level comparison"
+      }
+    ],
+    "retrieval_scope": {
+      "query": "crispr knockout screen identify genes improve persistence rate",
+      "queries": [
+        "\"car-t cells\" AND (\"crispr knockout\")",
+        "(crispr OR knockout OR screen) AND (identify OR genes OR improve)"
+      ],
+      "query_basis": "Boolean strings built from proposal terms and title bigrams; they are stated so a human can paste them into a literature database, but no search engine or network call is executed here",
+      "database": "not_applicable (supplied batch only)",
+      "executed_on": "supplied_batch",
+      "executed_at": "not_applicable (offline run, no wall-clock anchor)",
+      "identified_count": 3,
+      "included_count": 3,
+      "hits_per_query": [
+        {
+          "query": "\"car-t cells\" AND (\"crispr knockout\")",
+          "hits": 2,
+          "method": "offline keyword match over the supplied titles, abstracts and attached source text; no database was queried"
+        },
+        {
+          "query": "(crispr OR knockout OR screen) AND (identify OR genes OR improve)",
+          "hits": 2,
+          "method": "offline keyword match over the supplied titles, abstracts and attached source text; no database was queried"
+        }
+      ],
+      "criteria": [
+        {
+          "id": "I1",
+          "text": "the entry is a record object that carries a title or a DOI, so it can be identified uniquely",
+          "type": "inclusion",
+          "origin": "derived"
+        },
+        {
+          "id": "I2",
+          "text": "the record's title, abstract and year are used for comparison; missing fields become a comparability gap rather than an exclusion",
+          "type": "inclusion",
+          "origin": "derived"
+        },
+        {
+          "id": "X1",
+          "text": "a later record repeats the DOI, or the normalised title plus year, of an earlier record and is removed as a duplicate",
+          "type": "exclusion",
+          "origin": "derived"
+        },
+        {
+          "id": "X2",
+          "text": "the entry is not a record object or carries neither a title nor a DOI",
+          "type": "exclusion",
+          "origin": "derived"
+        }
+      ],
+      "criteria_origin": "derived",
+      "screening_log": [
+        {
+          "source_id": "A1",
+          "doi": "10.0000/demo.a1",
+          "title": "CRISPR knockout screens in CAR-T cells",
+          "stage": "eligibility",
+          "decision": "include",
+          "reason_code": "ELIGIBLE",
+          "criteria_ids": [
+            "I1",
+            "I2"
+          ],
+          "duplicate_of": null,
+          "quote": "# CRISPR knockout screens in CAR-T cells Synthetic demonstration record: CRISPR knockout screens identified regulators of the CAR-T persistence rate in primary",
+          "quote_verified": true,
+          "locator": "S1#P1",
+          "case_locator": "/prior_art/0",
+          "source_file": "sources/A1-crispr-knockout-screens-in-car-t-cells.md"
+        },
+        {
+          "source_id": "A2",
+          "doi": "10.0000/demo.a2",
+          "title": "CAR-T persistence without genetic screening",
+          "stage": "eligibility",
+          "decision": "include",
+          "reason_code": "ELIGIBLE",
+          "criteria_ids": [
+            "I1",
+            "I2"
+          ],
+          "duplicate_of": null,
+          "quote": "# CAR-T persistence without genetic screening Synthetic demonstration record: standard CAR-T therapy showed no significant improvement in the persistence rate",
+          "quote_verified": true,
+          "locator": "S2#P1",
+          "case_locator": "/prior_art/1",
+          "source_file": "sources/A2-car-t-persistence-without-genetic-screening.md"
+        },
+        {
+          "source_id": "A3",
+          "doi": null,
+          "title": "Commentary on emerging cell therapies",
+          "stage": "eligibility",
+          "decision": "include",
+          "reason_code": "ELIGIBLE",
+          "criteria_ids": [
+            "I1",
+            "I2"
+          ],
+          "duplicate_of": null,
+          "quote": "Commentary on emerging cell therapies",
+          "quote_verified": true,
+          "locator": "/prior_art/2",
+          "case_locator": "/prior_art/2",
+          "source_file": null
+        }
+      ],
+      "flow": {
+        "identified": 3,
+        "duplicates": 0,
+        "unique": 3,
+        "screened": 3,
+        "excluded": 0,
+        "included": 3,
+        "arithmetic_closure": true,
+        "closure_rule": "identified = duplicates + unique; unique = screened = included + excluded"
+      },
+      "applied_protocol": {
+        "year_range": "not restricted (no window declared)",
+        "languages": "not restricted (no language restriction declared)",
+        "designs": "not restricted (no design restriction declared)",
+        "publication_types": "not restricted (no publication-type restriction declared)",
+        "origin": "derived",
+        "note": "no prospective protocol was supplied; the scope is the supplied batch only and no external search is claimed"
+      },
+      "inclusion": "I1: the entry is a record object that carries a title or a DOI, so it can be identified uniquely; I2: the record's title, abstract and year are used for comparison; missing fields become a comparability gap rather than an exclusion",
+      "exclusion": [
+        "X1: a later record repeats the DOI, or the normalised title plus year, of an earlier record and is removed as a duplicate",
+        "X2: the entry is not a record object or carries neither a title nor a DOI"
+      ],
+      "batch_size": 3,
+      "screened_out": {
+        "duplicates": 0,
+        "excluded": 0,
+        "missing_abstract": 1,
+        "missing_year": 1
+      },
+      "sources_found": 2,
+      "source_files": [
+        {
+          "key": "S1",
+          "path": "sources/A1-crispr-knockout-screens-in-car-t-cells.md",
+          "ext": ".md",
+          "chars": 519,
+          "truncated": false
+        },
+        {
+          "key": "S2",
+          "path": "sources/A2-car-t-persistence-without-genetic-screening.md",
+          "ext": ".md",
+          "chars": 468,
+          "truncated": false
+        }
+      ],
+      "unparsed_sources": [],
+      "coverage_gap": [
+        "no external database search was run, so recall beyond the supplied batch is unknown",
+        "2 source file(s) were parsed as text and matched to records",
+        "1 included record(s) could not be matched to a source file; they are cited by JSON pointer",
+        "1 record(s) carry neither an abstract nor a source file",
+        "1 record(s) carry no year"
+      ],
+      "external_search": false,
+      "task_text_used": false
+    },
+    "comparison": [
+      {
+        "source_id": "A1",
+        "locator": "/prior_art/0",
+        "source_file": "sources/A1-crispr-knockout-screens-in-car-t-cells.md",
+        "title": "CRISPR knockout screens in CAR-T cells",
+        "year": 2021,
+        "shared_terms": [
+          "crispr",
+          "knockout",
+          "persistence",
+          "rate",
+          "car-t",
+          "cells"
+        ],
+        "shared_phrases": [
+          "car-t cells",
+          "crispr knockout",
+          "persistence rate",
+          "t cells"
+        ],
+        "overlap": 0.72,
+        "overlap_class": "direct_overlap",
+        "comparison_fields": [
+          "title",
+          "abstract",
+          "source_file",
+          "year"
+        ],
+        "not_comparable_reason": null
+      },
+      {
+        "source_id": "A2",
+        "locator": "/prior_art/1",
+        "source_file": "sources/A2-car-t-persistence-without-genetic-screening.md",
+        "title": "CAR-T persistence without genetic screening",
+        "year": 2023,
+        "shared_terms": [
+          "persistence",
+          "rate",
+          "car-t",
+          "standard",
+          "therapy"
+        ],
+        "shared_phrases": [
+          "persistence rate"
+        ],
+        "overlap": 0.413,
+        "overlap_class": "partial_overlap",
+        "comparison_fields": [
+          "title",
+          "abstract",
+          "source_file",
+          "year"
+        ],
+        "not_comparable_reason": null
+      },
+      {
+        "source_id": "A3",
+        "locator": "/prior_art/2",
+        "source_file": null,
+        "title": "Commentary on emerging cell therapies",
+        "year": null,
+        "shared_terms": [],
+        "shared_phrases": [],
+        "overlap": 0.0,
+        "overlap_class": "adjacent",
+        "comparison_fields": [
+          "title",
+          "abstract",
+          "source_file",
+          "year"
+        ],
+        "not_comparable_reason": "title-only record: no abstract and no source file, so method, data and outcome cannot be compared"
+      }
+    ],
+    "innovation_checks": [
+      {
+        "claim": "the proposed intervention (crispr, knockout, screen, car-t) is itself novel",
+        "innovation_type": "method",
+        "scope": "structural",
+        "covered_by": [
+          "A1",
+          "A2"
+        ],
+        "verdict": "covered",
+        "basis": "intervention terms were matched against every supplied title and abstract; coverage here is batch-bounded"
+      },
+      {
+        "claim": "the stated outcome (persistence rate) has not been measured before",
+        "innovation_type": "conclusion",
+        "scope": "structural",
+        "covered_by": [
+          "A1",
+          "A2"
+        ],
+        "verdict": "covered",
+        "basis": "outcome indicators were matched against every supplied title and abstract"
+      },
+      {
+        "claim": "the intervention x outcome combination is unoccupied",
+        "innovation_type": "method",
+        "scope": "structural",
+        "covered_by": [
+          "A1",
+          "A2"
+        ],
+        "verdict": "covered",
+        "basis": "at least one supplied record mentions both the intervention and the outcome; this is a batch observation, not a novelty guarantee"
+      }
+    ],
+    "conflicting_evidence": [
+      {
+        "claim": "supplied records disagree on the stated outcome",
+        "supporting": [
+          {
+            "source_id": "A1",
+            "locator": "S1#P1",
+            "quote": "# CRISPR knockout screens in CAR-T cells Synthetic demonstration record: CRISPR knockout screens identified regulators of the CAR-T persistence rate in primary T cells. Persistence improved in the screened arm. Methods (synthetic): pooled"
+          }
+        ],
+        "conflicting": [
+          {
+            "source_id": "A2",
+            "locator": "S2#P1",
+            "quote": "# CAR-T persistence without genetic screening Synthetic demonstration record: standard CAR-T therapy showed no significant improvement in the persistence rate compared with the control cohort. Methods (synthetic): a retrospective"
+          }
+        ],
+        "resolution": "unresolved: both directions are kept; the batch supplies no design or effect-size fields with which to adjudicate",
+        "needs_full_text": true
+      }
+    ],
+    "synthesis": {
+      "verdict": "hold",
+      "conditions": [
+        "the intervention x outcome combination is already reported by A1, A2; state a substantive differentiator (method, data, transfer or conclusion revision) before claiming novelty",
+        "obtain expert review of the closest work before any novelty claim is made",
+        "close the declared warnings: methods_supported"
+      ],
+      "stop_conditions": [
+        "a supplied record already reports the intervention x outcome combination",
+        "a feasibility blocker cannot be resolved with the declared resources",
+        "the outcome cannot be measured with an available instrument"
+      ],
+      "basis": [
+        "testability: falsifiable as written",
+        "novelty in batch: low (score 9)",
+        "feasibility: feasible_with_conditions",
+        "innovation statements already covered in batch: 3",
+        "intervention x outcome already reported: yes; open differentiators: 0"
+      ],
+      "decision_scope": "planning aid only; not a funding, ethics, personnel or publication decision"
+    },
+    "needs_human_confirmation": [
+      {
+        "item": "read the full text of A3",
+        "locator": "/prior_art/2",
+        "reason": "no abstract or source file was supplied; the comparison uses the title only"
+      },
+      {
+        "item": "operationalise 'improve'",
+        "locator": "/proposal",
+        "reason": "the term has no measurable definition in the proposal text"
+      },
+      {
+        "item": "check the closest work A1 in full text",
+        "locator": "S1#P1",
+        "reason": "lexical overlap flags it as close; only full-text reading can confirm or reject coverage"
+      },
+      {
+        "item": "adjudicate the conflicting outcome reports",
+        "locator": "/",
+        "reason": "the batch contains opposing polarity cues and no design fields with which to resolve them"
+      }
+    ],
+    "scorecard": {
+      "novelty_score": 9,
+      "feasibility_score": 90,
+      "testability_score": 100,
+      "weights": "equal thirds for transparent reading only; not a funding decision"
+    },
+    "method": {
+      "novelty_rule": "share of proposal terms found in the record title/abstract, plus a phrase bonus; thresholds direct>=0.45, partial>=0.25",
+      "comparison_rule": "every included record is compared on title, abstract and year; records that cannot be compared carry not_comparable_reason",
+      "screening_rule": "records are identified from the case, de-duplicated by DOI or normalised title plus year, and screened against the declared criteria; the flow closes arithmetically",
+      "material_rule": "md/txt/csv/json files under the input root are read as text and matched to records by DOI, title or file name; PDFs are converted with pdftotext when available, otherwise they are listed as unparsed",
+      "evidence_rule": "quotes are exact substrings of the cited text; locators are S1#P2 (paragraph 2 of the first source file) when a source file is matched, else a JSON pointer such as /prior_art/0",
+      "conflict_rule": "positive and negative outcome cues are detected on the stated outcome terms; opposing records are kept unresolved",
+      "feasibility_rule": "only declared resources are checked; undeclared capacity is never inferred",
+      "deterministic": true,
+      "network": false
+    },
+    "limitations": [
+      "Novelty is lexical overlap with the supplied prior art, not a patent or literature search.",
+      "Feasibility covers only declared resources; undeclared capacity cannot be inferred.",
+      "Scores are heuristic and must not be used as a funding or ethics decision.",
+      "No experimental plan, power calculation or budget model is produced.",
+      "Conflict detection relies on polarity cues in title/abstract and cannot replace a methodological appraisal.",
+      "Source matching relies on DOI, title and file-name similarity; a renamed file without a DOI or title may stay unmatched."
+    ],
+    "change_log": [
+      "Restated the proposal and checked whether it is falsifiable as written.",
+      "Read the text materials under the input root and matched them to records.",
+      "Declared the criteria, protocol and screening log, and closed the identified/duplicate/included counts.",
+      "Compared proposal terms with each included prior-art record and recorded comparability.",
+      "Checked each innovation statement against every supplied record.",
+      "Kept opposing outcome reports unresolved and carried them into the synthesis.",
+      "Checked feasibility against declared data, sample, time, methods and ethics.",
+      "Derived review findings with a pre-declared severity scale, coverage per aspect, and a written review report.",
+      "Assembled risks, revisions, a conditional synthesis and a transparent scorecard."
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "E01",
+      "kind": "proposal",
+      "source_id": "proposal",
+      "locator": "/proposal",
+      "case_locator": "/proposal",
+      "source_file": null,
+      "decision": null,
+      "reason_code": null,
+      "criteria_ids": [],
+      "quote": "A CRISPR knockout screen will identify genes that improve the persistence rate of CAR-T cells versus standard CAR-T therapy in adult patients.",
+      "quote_verified": true,
+      "truncated": false
+    },
+    {
+      "evidence_id": "E02",
+      "kind": "prior_art",
+      "source_id": "A1",
+      "locator": "S1#P1",
+      "case_locator": "/prior_art/0",
+      "source_file": "sources/A1-crispr-knockout-screens-in-car-t-cells.md",
+      "decision": "include",
+      "reason_code": "ELIGIBLE",
+      "criteria_ids": [
+        "I1",
+        "I2"
+      ],
+      "quote": "# CRISPR knockout screens in CAR-T cells Synthetic demonstration record: CRISPR knockout screens identified regulators of the CAR-T persistence rate in primary T cells. Persistence improved in the screened arm. Methods (synthetic): pooled",
+      "quote_verified": true,
+      "truncated": true,
+      "year": 2021,
+      "overlap": 0.72,
+      "overlap_class": "direct_overlap"
+    },
+    {
+      "evidence_id": "E03",
+      "kind": "prior_art",
+      "source_id": "A2",
+      "locator": "S2#P1",
+      "case_locator": "/prior_art/1",
+      "source_file": "sources/A2-car-t-persistence-without-genetic-screening.md",
+      "decision": "include",
+      "reason_code": "ELIGIBLE",
+      "criteria_ids": [
+        "I1",
+        "I2"
+      ],
+      "quote": "# CAR-T persistence without genetic screening Synthetic demonstration record: standard CAR-T therapy showed no significant improvement in the persistence rate compared with the control cohort. Methods (synthetic): a retrospective",
+      "quote_verified": true,
+      "truncated": true,
+      "year": 2023,
+      "overlap": 0.413,
+      "overlap_class": "partial_overlap"
+    },
+    {
+      "evidence_id": "E04",
+      "kind": "prior_art",
+      "source_id": "A3",
+      "locator": "/prior_art/2",
+      "case_locator": "/prior_art/2",
+      "source_file": null,
+      "decision": "include",
+      "reason_code": "ELIGIBLE",
+      "criteria_ids": [
+        "I1",
+        "I2"
+      ],
+      "quote": "Commentary on emerging cell therapies",
+      "quote_verified": true,
+      "truncated": false,
+      "year": null,
+      "overlap": 0.0,
+      "overlap_class": "adjacent"
+    }
+  ],
+  "uncertainty": [
+    {
+      "type": "title_only_records",
+      "detail": "At least one record has neither an abstract nor a source file."
+    },
+    {
+      "type": "source_unmatched",
+      "detail": "At least one included record could not be matched to a parsed source file."
+    },
+    {
+      "type": "batch_only",
+      "detail": "Novelty is relative to the supplied batch; no external search or expert panel was used."
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "records": 3,
+    "records_identified": 3,
+    "duplicates": 0,
+    "excluded": 0,
+    "sources_found": 2,
+    "sources_unparsed": 0,
+    "evidence": 4,
+    "findings": 10,
+    "findings_critical": 1,
+    "aspects_checked": 5,
+    "report_chars": 969,
+    "proposal_terms": 15,
+    "close_works": 2,
+    "blockers": 0,
+    "innovation_checks": 3,
+    "conflicts": 1,
+    "human_confirmation_items": 4,
+    "network": "disabled"
+  },
+  "input_manifest": {
+    "files": [
+      {
+        "path": "case.json",
+        "bytes": 2018,
+        "sha256": "8577239d6ef4f3aed0c9ef020c3ac9ab95781ae9cf9fbeb7ec73c460872380c7",
+        "hash_scope": "full"
+      },
+      {
+        "path": "sources/A1-crispr-knockout-screens-in-car-t-cells.md",
+        "bytes": 520,
+        "sha256": "fa29023b3c9e1fb7b6ad4e9d635978f73bd36a7a79435c94a9b9a6af0f0aaead",
+        "hash_scope": "full"
+      },
+      {
+        "path": "sources/A2-car-t-persistence-without-genetic-screening.md",
+        "bytes": 469,
+        "sha256": "d9bb306e3a2e2a778b07f6e07ec92f5a712be056245e307aff209dcb386230a5",
+        "hash_scope": "full"
+      }
+    ],
+    "file_count": 3,
+    "sources_found": 2,
+    "source_files": [
+      {
+        "key": "S1",
+        "path": "sources/A1-crispr-knockout-screens-in-car-t-cells.md",
+        "ext": ".md",
+        "chars": 519,
+        "truncated": false
+      },
+      {
+        "key": "S2",
+        "path": "sources/A2-car-t-persistence-without-genetic-screening.md",
+        "ext": ".md",
+        "chars": 468,
+        "truncated": false
+      }
+    ],
+    "unparsed": [],
+    "skipped": [],
+    "note": "case.json is the case definition and is not treated as a source paper; md/txt/csv/json files are read as text, pdf files are converted with pdftotext when it is installed"
+  },
+  "run": {
+    "entrypoint": "scripts/sk_entry.py",
+    "network": "disabled",
+    "stdlib_only": true,
+    "deterministic": true,
+    "reads_source_text": true,
+    "policy_version": "1.0.0"
+  },
+  "testable_form": {
+    "restated": "In adult patients, test whether CRISPR knockout screen changes persistence rate relative to standard CAR-T therapy",
+    "population_hint": "adult patients",
+    "comparator_hint": "standard CAR-T therapy",
+    "intervention_terms": [
+      "crispr",
+      "knockout",
+      "screen",
+      "car-t"
+    ],
+    "outcome_indicators": [
+      "persistence rate"
+    ],
+    "has_comparator": true,
+    "vague_terms": [
+      "improve"
+    ],
+    "tests": {
+      "has_outcome_measure": true,
+      "has_comparator": true,
+      "has_population": true,
+      "is_falsifiable": true
+    }
+  },
+  "novelty_assessment": {
+    "score": 9,
+    "level": "low",
+    "best_overlap": 0.72,
+    "close_works": 2,
+    "scope": "lexical overlap with the supplied prior-art batch only; this is not a global novelty search"
+  },
+  "comparison": [
+    {
+      "source_id": "A1",
+      "locator": "/prior_art/0",
+      "source_file": "sources/A1-crispr-knockout-screens-in-car-t-cells.md",
+      "title": "CRISPR knockout screens in CAR-T cells",
+      "year": 2021,
+      "shared_terms": [
+        "crispr",
+        "knockout",
+        "persistence",
+        "rate",
+        "car-t",
+        "cells"
+      ],
+      "shared_phrases": [
+        "car-t cells",
+        "crispr knockout",
+        "persistence rate",
+        "t cells"
+      ],
+      "overlap": 0.72,
+      "overlap_class": "direct_overlap",
+      "comparison_fields": [
+        "title",
+        "abstract",
+        "source_file",
+        "year"
+      ],
+      "not_comparable_reason": null
+    },
+    {
+      "source_id": "A2",
+      "locator": "/prior_art/1",
+      "source_file": "sources/A2-car-t-persistence-without-genetic-screening.md",
+      "title": "CAR-T persistence without genetic screening",
+      "year": 2023,
+      "shared_terms": [
+        "persistence",
+        "rate",
+        "car-t",
+        "standard",
+        "therapy"
+      ],
+      "shared_phrases": [
+        "persistence rate"
+      ],
+      "overlap": 0.413,
+      "overlap_class": "partial_overlap",
+      "comparison_fields": [
+        "title",
+        "abstract",
+        "source_file",
+        "year"
+      ],
+      "not_comparable_reason": null
+    },
+    {
+      "source_id": "A3",
+      "locator": "/prior_art/2",
+      "source_file": null,
+      "title": "Commentary on emerging cell therapies",
+      "year": null,
+      "shared_terms": [],
+      "shared_phrases": [],
+      "overlap": 0.0,
+      "overlap_class": "adjacent",
+      "comparison_fields": [
+        "title",
+        "abstract",
+        "source_file",
+        "year"
+      ],
+      "not_comparable_reason": "title-only record: no abstract and no source file, so method, data and outcome cannot be compared"
+    }
+  ],
+  "innovation_checks": [
+    {
+      "claim": "the proposed intervention (crispr, knockout, screen, car-t) is itself novel",
+      "innovation_type": "method",
+      "scope": "structural",
+      "covered_by": [
+        "A1",
+        "A2"
+      ],
+      "verdict": "covered",
+      "basis": "intervention terms were matched against every supplied title and abstract; coverage here is batch-bounded"
+    },
+    {
+      "claim": "the stated outcome (persistence rate) has not been measured before",
+      "innovation_type": "conclusion",
+      "scope": "structural",
+      "covered_by": [
+        "A1",
+        "A2"
+      ],
+      "verdict": "covered",
+      "basis": "outcome indicators were matched against every supplied title and abstract"
+    },
+    {
+      "claim": "the intervention x outcome combination is unoccupied",
+      "innovation_type": "method",
+      "scope": "structural",
+      "covered_by": [
+        "A1",
+        "A2"
+      ],
+      "verdict": "covered",
+      "basis": "at least one supplied record mentions both the intervention and the outcome; this is a batch observation, not a novelty guarantee"
+    }
+  ],
+  "conflicting_evidence": [
+    {
+      "claim": "supplied records disagree on the stated outcome",
+      "supporting": [
+        {
+          "source_id": "A1",
+          "locator": "S1#P1",
+          "quote": "# CRISPR knockout screens in CAR-T cells Synthetic demonstration record: CRISPR knockout screens identified regulators of the CAR-T persistence rate in primary T cells. Persistence improved in the screened arm. Methods (synthetic): pooled"
+        }
+      ],
+      "conflicting": [
+        {
+          "source_id": "A2",
+          "locator": "S2#P1",
+          "quote": "# CAR-T persistence without genetic screening Synthetic demonstration record: standard CAR-T therapy showed no significant improvement in the persistence rate compared with the control cohort. Methods (synthetic): a retrospective"
+        }
+      ],
+      "resolution": "unresolved: both directions are kept; the batch supplies no design or effect-size fields with which to adjudicate",
+      "needs_full_text": true
+    }
+  ],
+  "feasibility": {
+    "checks": [
+      {
+        "check": "data_available",
+        "status": "pass",
+        "detail": "declared data: primary T cells from consented donors"
+      },
+      {
+        "check": "time",
+        "status": "pass",
+        "detail": "12 month(s) available"
+      },
+      {
+        "check": "methods_supported",
+        "status": "warning",
+        "detail": "declared resources do not mention: crispr"
+      },
+      {
+        "check": "ethics",
+        "status": "pass",
+        "detail": "human/animal work detected; ethics/consent declared"
+      }
+    ],
+    "blockers": [],
+    "warnings": [
+      "methods_supported"
+    ],
+    "verdict": "feasible_with_conditions"
+  },
+  "synthesis": {
+    "verdict": "hold",
+    "conditions": [
+      "the intervention x outcome combination is already reported by A1, A2; state a substantive differentiator (method, data, transfer or conclusion revision) before claiming novelty",
+      "obtain expert review of the closest work before any novelty claim is made",
+      "close the declared warnings: methods_supported"
+    ],
+    "stop_conditions": [
+      "a supplied record already reports the intervention x outcome combination",
+      "a feasibility blocker cannot be resolved with the declared resources",
+      "the outcome cannot be measured with an available instrument"
+    ],
+    "basis": [
+      "testability: falsifiable as written",
+      "novelty in batch: low (score 9)",
+      "feasibility: feasible_with_conditions",
+      "innovation statements already covered in batch: 3",
+      "intervention x outcome already reported: yes; open differentiators: 0"
+    ],
+    "decision_scope": "planning aid only; not a funding, ethics, personnel or publication decision"
+  },
+  "research_gaps": [
+    {
+      "type": "title_only_records",
+      "basis": "records without an abstract or a source file cannot support a method-level comparison"
+    }
+  ],
+  "needs_human_confirmation": [
+    {
+      "item": "read the full text of A3",
+      "locator": "/prior_art/2",
+      "reason": "no abstract or source file was supplied; the comparison uses the title only"
+    },
+    {
+      "item": "operationalise 'improve'",
+      "locator": "/proposal",
+      "reason": "the term has no measurable definition in the proposal text"
+    },
+    {
+      "item": "check the closest work A1 in full text",
+      "locator": "S1#P1",
+      "reason": "lexical overlap flags it as close; only full-text reading can confirm or reject coverage"
+    },
+    {
+      "item": "adjudicate the conflicting outcome reports",
+      "locator": "/",
+      "reason": "the batch contains opposing polarity cues and no design fields with which to resolve them"
+    }
+  ],
+  "contract_notes": {
+    "testable_form": "lifted from result.testable_form so the declared field exists at top level",
+    "novelty_assessment": "lifted from result.novelty_assessment so the declared field exists at top level",
+    "comparison": "lifted from result.comparison so the declared field exists at top level",
+    "innovation_checks": "lifted from result.innovation_checks so the declared field exists at top level",
+    "conflicting_evidence": "lifted from result.conflicting_evidence so the declared field exists at top level",
+    "feasibility": "lifted from result.feasibility so the declared field exists at top level",
+    "synthesis": "lifted from result.synthesis so the declared field exists at top level",
+    "research_gaps": "lifted from result.research_gaps so the declared field exists at top level",
+    "needs_human_confirmation": "lifted from result.needs_human_confirmation so the declared field exists at top level",
+    "status": "already produced as a top-level field; kept unchanged"
+  },
+  "contract_extras": {
+    "contract_shape": "mapping",
+    "declared_keys": [
+      "testable_form",
+      "novelty_assessment",
+      "comparison",
+      "innovation_checks",
+      "conflicting_evidence",
+      "feasibility",
+      "synthesis",
+      "research_gaps",
+      "needs_human_confirmation",
+      "status"
+    ],
+    "not_determinable_keys": [],
+    "aliases_applied": {},
+    "uninterpreted_input_keys": []
+  },
+  "output_contract_fields": {
+    "provided": [
+      "testable_form",
+      "novelty_assessment",
+      "comparison",
+      "innovation_checks",
+      "conflicting_evidence",
+      "feasibility",
+      "synthesis",
+      "research_gaps",
+      "needs_human_confirmation",
+      "status"
+    ],
+    "present": {
+      "testable_form": true,
+      "novelty_assessment": true,
+      "comparison": true,
+      "innovation_checks": true,
+      "conflicting_evidence": true,
+      "feasibility": true,
+      "synthesis": true,
+      "research_gaps": true,
+      "needs_human_confirmation": true,
+      "status": true
+    },
+    "sources": {
+      "testable_form": "result",
+      "novelty_assessment": "result",
+      "comparison": "result",
+      "innovation_checks": "result",
+      "conflicting_evidence": "result",
+      "feasibility": "result",
+      "synthesis": "result",
+      "research_gaps": "result",
+      "needs_human_confirmation": "result",
+      "status": "top_level"
+    },
+    "not_determinable": []
+  },
+  "artifacts": [
+    "report.md",
+    "evidence.csv",
+    "screening_log.csv",
+    "provenance.json"
+  ]
+}
