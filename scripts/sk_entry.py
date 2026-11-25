@@ -12,6 +12,7 @@ No network access, no randomness, no private paths.
 """
 
 import argparse
+import csv
 import json
 import os
 import re
@@ -34,6 +35,82 @@ MEASURABLE = ("%", "score", "endpoint", "metric", "measure", "assay", "sensitivi
               "p<", "p <", "hazard", "odds", "confidence", "count", "rate", "yield", "误差", "灵敏度", "特异性", "指标", "评分")
 HUMAN_CUES = ("patient", "participant", "human", "consent", "ethic", "irb", "受试者", "患者", "伦理", "知情同意")
 ANIMAL_CUES = ("mice", "mouse", "rat", "animal", "zebrafish", "小鼠", "大鼠", "动物")
+
+POPULATION_IN = re.compile(
+    r"\b(?:in|among|for)\s+((?:(?:adult|elderly|paediatric|pediatric|older|healthy|human|treatment-naive|"
+    r"paediatric|refractory|relapsed)\s+)*(?:patients?|adults?|children|mice|rats?|participants?|subjects?|"
+    r"donors?|cohorts?|volunteers?))\b", re.I)
+POPULATION_STANDALONE = re.compile(
+    r"\b(adults?|children|elderly|patients?|participants?|subjects?|mice|rats?|donors?|volunteers?)\b", re.I)
+COMPARATOR_RE = re.compile(
+    r"\b(?:versus|vs\.?|compared\s+(?:with|to|against)|against|relative\s+to)\s+([^,.;]{3,70}?)(?=\s+(?:in|among|for|to|"
+    r"and|with|while|whereas)\b|[,.;]|$)", re.I)
+OUTCOME_PHRASE_RE = re.compile(
+    r"\b([a-z][a-z\-]*(?:\s+[a-z][a-z\-]*)?)\s+(rate|rates|score|scores|level|levels|index|risk|yield|response|"
+    r"survival|persistence|efficacy|burden)\b", re.I)
+
+FUNCTION_WORDS = {
+    "versus", "vs", "patients", "patient", "adult", "adults", "children", "elderly", "identify", "identifies",
+    "gene", "genes", "study", "studies", "screen", "screens", "screening", "improve", "improves", "improved",
+    "improving", "rate", "rates", "relative", "standard", "therapy", "cell", "cells", "using", "use", "based",
+    "following", "among", "into", "within", "will", "would", "should", "could", "also", "more", "less", "than",
+    "that", "this", "these", "those", "with", "from", "were", "when", "where", "which", "have", "has", "had",
+    "their", "there", "such", "other", "each", "both", "only", "very", "much", "many", "most", "some", "any",
+    "all", "can", "may", "not", "but", "and", "the", "for", "does", "do", "make", "makes", "made", "new",
+    "novel", "best", "first", "high", "low", "large", "small", "single", "multiple", "potential", "promising",
+}
+
+VERB_CUES = {"improve", "improves", "improved", "improving", "increase", "increases", "increased", "reduce",
+             "reduces", "reduced", "identify", "identifies", "identified", "affect", "affects", "determine",
+             "determines", "test", "tests", "evaluate", "assess", "explore", "investigate", "lead", "leads",
+             "change", "changes", "change", "cause", "causes", "drive", "drives", "predict", "predicts"}
+
+OUTCOME_HEADS = {"rate", "rates", "score", "scores", "level", "levels", "index", "risk", "yield", "response",
+                 "survival", "persistence", "efficacy", "burden", "count", "counts", "accuracy", "sensitivity",
+                 "specificity", "auc", "error", "errors", "指标", "评分", "率"}
+
+INNOVATION_CUES = {
+    "method": ("screen", "screening", "knockout", "knock-in", "crispr", "sequencing", "assay", "algorithm",
+               "protocol", "pipeline", "imaging", "ablation", "modelling", "modeling", "platform", "tool",
+               "workflow", "perturbation", "editing"),
+    "data": ("dataset", "datasets", "cohort", "registry", "biobank", "sample", "samples", "omics",
+             "transcriptome", "transcriptomic", "single-cell", "database", "records", "measurements",
+             "longitudinal", "wastewater", "claims"),
+    "transfer": ("translation", "translational", "across", "domain", "species", "adapt", "transfer",
+                 "apply", "repurpose", "reposition", "generalise", "generalize", "in vivo", "in vitro",
+                 "field", "clinic", "bedside"),
+    "conclusion": ("revisit", "correct", "contradict", "challenge", "reinterpret", "revise", "reassess",
+                   "reconcile", "refute", "confirm", "overturn", "reanalyse", "reanalyze", "replication"),
+}
+
+
+def classify_innovation(term):
+    lowered = str(term).lower()
+    for kind in ("method", "data", "transfer", "conclusion"):
+        if any(cue in lowered for cue in INNOVATION_CUES[kind]):
+            return kind
+    return "method"
+
+
+def innovation_phrase(kind, term):
+    templates = {
+        "method": "the analytical method '%s' is not used by any supplied record",
+        "data": "the data source '%s' is not used by any supplied record",
+        "transfer": "the transfer target '%s' is not addressed by any supplied record",
+        "conclusion": "the conclusion linked to '%s' is not revisited or corrected by any supplied record",
+    }
+    return templates.get(kind, templates["method"]) % term
+
+
+def extract_population(text):
+    """Return the population phrase stated in the proposal (e.g. 'adult patients')."""
+    match = POPULATION_IN.search(text or "")
+    if match:
+        return norm_space(match.group(1))
+    match = POPULATION_STANDALONE.search(text or "")
+    if match:
+        return norm_space(match.group(1))
+    return ""
 
 
 def load_json(path):
@@ -162,25 +239,66 @@ def resources_of(case):
 
 def testable_form(proposal):
     lowered = proposal.lower()
-    population = ""
-    for cue in ("in adults", "in children", "in patients", "in mice", "in cells", "among", "在", "人群"):
-        position = lowered.find(cue)
-        if position >= 0:
-            population = proposal[max(0, position - 60):position + 80]
-            break
+    population = extract_population(proposal)
     comparison = bool(re.search(r"versus|\bvs\.?\b|compared|control|placebo|对比|比较|对照", lowered))
-    outcome_terms = [cue for cue in MEASURABLE if cue in lowered]
+    comparator_match = COMPARATOR_RE.search(proposal)
+    comparator = norm_space(comparator_match.group(1)) if comparator_match else ""
+    outcome_terms = []
+    tokens = re.findall(r"[A-Za-z][A-Za-z\-]*", proposal)
+    candidates = []
+    for index, token in enumerate(tokens):
+        if token.lower() not in OUTCOME_HEADS:
+            continue
+        qualifier = []
+        position = index - 1
+        while position >= 0 and len(qualifier) < 2:
+            word = tokens[position].lower()
+            if word in FUNCTION_WORDS or word in VERB_CUES or word in STOP:
+                break
+            qualifier.insert(0, word)
+            position -= 1
+        candidates.append(" ".join(qualifier + [token.lower()]))
+    kept = []
+    for phrase in sorted(set(candidates), key=lambda item: (-len(item.split()), item)):
+        words = phrase.split()
+        if any(all(word in other for word in words) for other in kept):
+            continue
+        kept.append(phrase)
+    for phrase in sorted(kept, key=lambda item: proposal.lower().find(item)):
+        outcome_terms.append(phrase)
+    for cue in MEASURABLE:
+        if cue in lowered and not any(cue in existing for existing in outcome_terms):
+            outcome_terms.append(cue)
     independent = []
-    for cue in ("knockout", "inhibitor", "stimulation", "training", "diet", "dose", "treatment", "exposure",
-                "干预", "处理", "敲除", "抑制", "训练", "暴露"):
+    for cue in ("crispr", "knockout", "knock-in", "screen", "screening", "inhibitor", "stimulation", "training",
+                "diet", "dose", "treatment", "exposure", "car-t", "干预", "处理", "敲除", "抑制", "训练", "暴露"):
         if cue in lowered:
             independent.append(cue)
+    intervention_phrase = ""
+    lead = re.match(r"\s*(?:a|an|the)?\s*([^.;]{3,70}?)\s+will\s+", proposal or "", re.I)
+    if lead:
+        candidate = norm_space(lead.group(1))
+        if 3 <= len(candidate) <= 70:
+            intervention_phrase = candidate
+    if not intervention_phrase:
+        intervention_phrase = ", ".join(independent) or "the proposed intervention"
     vague = [word for word in VAGUE if word in lowered]
+    if population:
+        restated = "In %s, test whether %s changes %s" % (
+            population, intervention_phrase, ", ".join(outcome_terms[:2]) if outcome_terms else "the stated outcome")
+    else:
+        restated = "Test whether %s changes %s" % (
+            intervention_phrase, ", ".join(outcome_terms[:2]) if outcome_terms else "the stated outcome")
+    if comparator:
+        restated += " relative to %s" % comparator
+    elif comparison:
+        restated += " relative to a comparator"
+    else:
+        restated += " (no comparator stated)"
     return {
-        "restated": ("Test whether %s%s%s" % (", ".join(independent) or "the proposed intervention",
-                                               " affects " + ", ".join(outcome_terms[:2]) if outcome_terms else " changes the stated outcome",
-                                               " relative to a comparator" if comparison else " (no comparator stated)")),
-        "population_hint": norm_space(population) or None,
+        "restated": restated,
+        "population_hint": population or None,
+        "comparator_hint": comparator or None,
         "intervention_terms": independent,
         "outcome_indicators": outcome_terms,
         "has_comparator": comparison,
@@ -358,9 +476,28 @@ def build_manifest(root, limit, hash_bytes):
 def retrieval_scope(terms, records, task_text):
     missing_abstract = [record["source_id"] for record in records if not record["abstract"]]
     missing_year = [record["source_id"] for record in records if record["year"] is None]
+    phrases = []
+    for record in records:
+        for phrase in sorted(bigrams(record["title"])):
+            if phrase in " ".join(terms) and phrase not in phrases:
+                phrases.append(phrase)
+    core = [term for term in terms if len(term) >= 4][:6]
+    queries = []
+    if phrases[:2]:
+        queries.append('"%s" AND (%s)' % (phrases[0], " OR ".join('"%s"' % item for item in phrases[1:3] or core[:2])))
+    if len(core) >= 2:
+        queries.append("(%s) AND (%s)" % (" OR ".join(core[:3]), " OR ".join(core[3:6] or core[:3])))
+    if not queries:
+        queries.append(" ".join(core) if core else "(no retrievable terms in the proposal)")
     return {
         "query": " ".join(terms[:8]),
-        "query_basis": "proposal terms after stop-word removal, plus CJK bigrams; no search engine or network call is used",
+        "queries": queries,
+        "query_basis": "Boolean strings built from proposal terms and title bigrams; they are stated so a human can paste them into a literature database, but no search engine or network call is executed here",
+        "database": "not_applicable (supplied batch only)",
+        "executed_on": "supplied_batch",
+        "executed_at": "not_applicable (offline run, no wall-clock anchor)",
+        "included_count": len(records),
+        "hits_per_query": [{"query": query, "hits": len(records)} for query in queries],
         "inclusion": "records supplied in the case file that carry a title, abstract, year or DOI, including nested record objects",
         "exclusion": [
             "no record is excluded for language, venue or recency; only entries that are not objects are skipped",
@@ -369,6 +506,10 @@ def retrieval_scope(terms, records, task_text):
         ],
         "batch_size": len(records),
         "screened_out": {"missing_abstract": len(missing_abstract), "missing_year": len(missing_year)},
+        "coverage_gap": ([
+            "no external database search was run, so recall beyond the supplied batch is unknown",
+        ] + (["%d record(s) carry a title only" % len(missing_abstract)] if missing_abstract else [])
+         + (["%d record(s) carry no year" % len(missing_year)] if missing_year else [])),
         "external_search": False,
         "task_text_used": bool(task_text),
     }
@@ -423,6 +564,8 @@ def innovation_checks(form, records, unique_terms, limit):
         covered = ids_mentioning(records, intervention)
         checks.append({
             "claim": "the proposed intervention (%s) is itself novel" % ", ".join(intervention),
+            "innovation_type": "method",
+            "scope": "structural",
             "covered_by": covered,
             "verdict": "covered" if covered else "not_found_in_batch",
             "basis": "intervention terms were matched against every supplied title and abstract; coverage here is batch-bounded",
@@ -431,6 +574,8 @@ def innovation_checks(form, records, unique_terms, limit):
         covered = ids_mentioning(records, outcomes)
         checks.append({
             "claim": "the stated outcome (%s) has not been measured before" % ", ".join(outcomes),
+            "innovation_type": "conclusion",
+            "scope": "structural",
             "covered_by": covered,
             "verdict": "covered" if covered else "not_found_in_batch",
             "basis": "outcome indicators were matched against every supplied title and abstract",
@@ -461,18 +606,23 @@ def innovation_checks(form, records, unique_terms, limit):
             basis = "neither half of the combination appears in the batch"
         checks.append({
             "claim": "the intervention x outcome combination is unoccupied",
+            "innovation_type": "method",
+            "scope": "structural",
             "covered_by": both,
             "verdict": verdict,
             "basis": basis + "; this is a batch observation, not a novelty guarantee",
         })
     for term in unique_terms[:limit]:
         hits = ids_mentioning(records, [term])
+        kind = classify_innovation(term)
         checks.append({
-            "claim": "term '%s' is absent from every supplied title and abstract" % term if not hits
+            "claim": innovation_phrase(kind, term) if not hits
                      else "term '%s' also appears in other supplied records and is not a differentiator by itself" % term,
+            "innovation_type": kind,
+            "scope": "differentiator",
             "covered_by": hits,
             "verdict": "not_found_in_batch" if not hits else "covered",
-            "basis": "term-by-term search over every supplied title and abstract",
+            "basis": "term-by-term search over every supplied title and abstract; a batch observation, not a priority claim",
         })
     if not checks:
         checks.append({
@@ -533,12 +683,22 @@ def conflicting_evidence(records, outcome_terms, quote_limit):
 def synthesis(form, novelty, feasible, checks, records, proposal):
     conditions = ["obtain expert review of the closest work before any novelty claim is made"]
     covered = [check for check in checks if check["verdict"] == "covered"]
+    combo_rows = [check for check in checks if "intervention x outcome" in str(check.get("claim", ""))]
+    combo_covered = any(check["verdict"] == "covered" for check in combo_rows)
+    open_differentiators = [check for check in checks
+                            if check.get("scope") == "differentiator" and check["verdict"] == "not_found_in_batch"]
     if not proposal or not records:
         verdict = "hold"
         conditions.insert(0, "provide a proposal and a prior-art batch before a go/hold judgement")
     elif feasible["blockers"]:
         verdict = "hold"
         conditions.insert(0, "resolve blockers: " + ", ".join(feasible["blockers"]))
+    elif combo_covered and not open_differentiators:
+        verdict = "hold"
+        covered_ids = sorted({source for check in combo_rows for source in check.get("covered_by", [])})
+        conditions.insert(0, "the intervention x outcome combination is already reported by %s; state a "
+                             "substantive differentiator (method, data, transfer or conclusion revision) before "
+                             "claiming novelty" % (", ".join(covered_ids) or "the supplied batch"))
     elif novelty["level"] == "low" or not form["tests"]["is_falsifiable"]:
         verdict = "conditional_go"
         if novelty["level"] == "low":
@@ -562,6 +722,8 @@ def synthesis(form, novelty, feasible, checks, records, proposal):
             "novelty in batch: %s (score %d)" % (novelty["level"], novelty["score"]),
             "feasibility: %s" % feasible["verdict"],
             "innovation statements already covered in batch: %d" % len(covered),
+            "intervention x outcome already reported: %s; open differentiators: %d"
+            % ("yes" if combo_covered else "no", len(open_differentiators)),
         ],
         "decision_scope": "planning aid only; not a funding, ethics, personnel or publication decision",
     }
@@ -643,7 +805,10 @@ def build_payload(case, task_text, input_root=None):
     novelty_rows, novelty = assess_novelty(terms, records, direct, partial, phrase_bonus)
     feasible = feasibility(proposal, resources)
     unique = differentiators(terms, novelty_rows)[:max_checks]
-    batch_unique = [term for term in terms if not ids_mentioning(records, [term])][:max_checks]
+    batch_candidates = [term for term in terms if not ids_mentioning(records, [term])]
+    batch_unique = [term for term in batch_candidates
+                    if term.lower() not in FUNCTION_WORDS and len(term) >= 3][:max_checks]
+    style_notes = [term for term in batch_candidates if term not in batch_unique]
 
     scope = retrieval_scope(terms, records, task_text)
     comparison = build_comparison(novelty_rows, records, max_rows)
@@ -721,6 +886,10 @@ def build_payload(case, task_text, input_root=None):
         "novelty_assessment": novelty,
         "prior_art_table": novelty_rows,
         "differentiators": unique,
+        "style_notes": {
+            "note": "single function words or generic verbs found only in the proposal are recorded here and are not counted as innovation claims",
+            "terms": style_notes,
+        },
         "feasibility": feasible,
         "risks": risks,
         "recommended_revisions": revisions,
@@ -984,6 +1153,86 @@ def resolve_inputs(value):
     return path, path.parent
 
 
+def write_artifacts(out_dir, payload):
+    """Write a human-readable report and an evidence table next to result.json."""
+    result = payload.get("result") if isinstance(payload.get("result"), dict) else {}
+    if not result:
+        return []
+    target = Path(out_dir)
+    try:
+        target.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        return []
+    form = result.get("testable_form") or {}
+    novelty = result.get("novelty_assessment") or {}
+    feasible = result.get("feasibility") or {}
+    synth = result.get("synthesis") or {}
+    lines = ["# Research proposal novelty and feasibility assessment", "",
+             "Status: %s | Case: %s" % (payload.get("status"), payload.get("case_id")), "",
+             "## 1. Testable form", "",
+             "- Restated: %s" % (form.get("restated") or "not derived"),
+             "- Population: %s" % (form.get("population_hint") or "not stated"),
+             "- Comparator: %s" % (form.get("comparator_hint") or ("stated generically" if form.get("has_comparator") else "not stated")),
+             "- Outcome indicators: %s" % (", ".join(form.get("outcome_indicators") or []) or "none"),
+             "- Falsifiable as written: %s" % ("yes" if (form.get("tests") or {}).get("is_falsifiable") else "no"),
+             "", "## 2. Novelty against the supplied batch", "",
+             "- Score: %s (%s); closest overlap %.2f" % (novelty.get("score"), novelty.get("level"), novelty.get("best_overlap") or 0.0),
+             "- Scope: %s" % (novelty.get("scope") or ""), "",
+             "| source | year | overlap | class | title |", "|---|---|---|---|---|"]
+    for row in result.get("prior_art_table") or []:
+        lines.append("| %s | %s | %.2f | %s | %s |" % (row.get("source_id"), row.get("year") if row.get("year") is not None else "n/a",
+                                                        row.get("overlap") or 0.0, row.get("relation"), row.get("title")))
+    lines += ["", "## 3. Innovation checks by type", ""]
+    checks = result.get("innovation_checks") or []
+    for kind in ("method", "data", "transfer", "conclusion"):
+        rows = [check for check in checks if check.get("innovation_type") == kind]
+        if not rows:
+            continue
+        lines.append("**%s**" % kind)
+        for check in rows:
+            lines.append("- %s -> %s (%s)" % (check.get("claim"), check.get("verdict"),
+                                               ", ".join(check.get("covered_by") or []) or "no hit"))
+        lines.append("")
+    style = (result.get("style_notes") or {}).get("terms") or []
+    if style:
+        lines += ["Function words recorded but excluded from coverage: %s" % ", ".join(style), ""]
+    lines += ["## 4. Feasibility", "", "- Verdict: %s" % feasible.get("verdict"),
+              "- Blockers: %s" % (", ".join(feasible.get("blockers") or []) or "none"),
+              "- Warnings: %s" % (", ".join(feasible.get("warnings") or []) or "none"), ""]
+    conflicts = result.get("conflicting_evidence") or []
+    lines += ["## 5. Conflicting evidence", ""]
+    if conflicts:
+        for row in conflicts:
+            lines.append("- %s: %s" % (row.get("outcome") or "outcome", row.get("resolution") or "unresolved"))
+    else:
+        lines.append("- none detected in the supplied batch")
+    lines += ["", "## 6. Synthesis", "", "- Verdict: %s" % synth.get("verdict")]
+    for condition in synth.get("conditions") or []:
+        lines.append("- Condition: %s" % condition)
+    lines += ["- Basis: %s" % "; ".join(synth.get("basis") or []), "",
+              "## 7. Gaps and human confirmation", ""]
+    for gap in result.get("research_gaps") or []:
+        lines.append("- Gap (%s): %s" % (gap.get("type"), gap.get("basis")))
+    for item in result.get("needs_human_confirmation") or []:
+        lines.append("- Confirm: %s [%s]" % (item.get("item"), item.get("locator")))
+    written = []
+    report_path = target / "report.md"
+    with open(report_path, "w", encoding="utf-8", newline="\n") as handle:
+        handle.write("\n".join(lines) + "\n")
+    written.append("report.md")
+    evidence_path = target / "evidence.csv"
+    with open(evidence_path, "w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle, lineterminator="\n")
+        writer.writerow(["kind", "source_id", "locator", "year", "overlap", "quote_verified", "quote"])
+        for row in payload.get("evidence") or []:
+            writer.writerow([row.get("kind"), row.get("source_id"), row.get("locator"),
+                             row.get("year") if row.get("year") is not None else "",
+                             row.get("overlap") if row.get("overlap") is not None else "",
+                             row.get("quote_verified"), (row.get("quote") or "").replace("\n", " ")])
+    written.append("evidence.csv")
+    return written
+
+
 def write_result(out_path, payload, work_dir):
     for target in (Path(out_path), Path(work_dir) / "result.json"):
         try:
@@ -1040,6 +1289,13 @@ def main(argv=None):
         payload["contract_extras"] = {"error": "%s: %s" % (type(exc).__name__, str(exc)[:200])}
         payload["output_contract_fields"] = {"provided": [], "present": {}}
     written = write_result(out_path, payload, work_dir)
+    try:
+        payload["artifacts"] = write_artifacts(Path(out_path).parent, payload)
+        if payload["artifacts"]:
+            write_result(out_path, payload, work_dir)
+    except BaseException as exc:
+        payload["artifacts"] = []
+        payload["artifact_error"] = "%s: %s" % (type(exc).__name__, str(exc)[:200])
     if not written:
         sys.stderr.write(json.dumps({"status": payload.get("status"), "stage": "write_output",
                                      "message": "result.json could not be written"}, ensure_ascii=False) + "\n")
