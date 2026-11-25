@@ -18,6 +18,9 @@ answers, private data or credentials are included.
 | `SKILL.md` |
 | `assets/policy.json` |
 | `examples/demo-case/case.json` |
+| `examples/demo-case/example-result.json` |
+| `examples/demo-case/sources/A1-crispr-knockout-screens-in-car-t-cells.md` |
+| `examples/demo-case/sources/A2-car-t-persistence-without-genetic-screening.md` |
 | `examples/quickstart.md` |
 | `references/evidence-discipline.md` |
 | `references/method.md` |
