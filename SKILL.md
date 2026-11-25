@@ -14,7 +14,16 @@ description: Use when a research idea must be judged before funding or execution
 3. **创新点识别**：把「干预新颖 / 结局未被测量 / 干预×结局组合未被占据 / 某差异词项」逐条判定为 `covered`、`partially_covered` 或 `not_found_in_batch`，并给出 `covered_by` 与判定依据。
 4. **可行性判断**：只对**已声明**的数据、样本量、时间、方法设备与伦理逐项检查，区分 `blocker` 与 `warning`，给出带条件的 `verdict`。
 
-在此之上补齐题面要求的另外两类内容：**冲突证据**（相反结论并列、不裁决）与**综合结论**（`go` / `conditional_go` / `hold` + 前提 + 停止条件），并把所有判断回链到输入 JSON Pointer 与原文短引。
+在此之上补齐题面要求的另外两类内容：**冲突证据**（相反结论并列、不裁决）与**综合结论**（`go` / `conditional_go` / `hold` + 前提 + 停止条件），并把所有判断回链到输入 JSON Pointer 或输入目录下的源文件段落（`S1#P2`）。
+
+```text
+result.json
+  ├─ review_report        中文成文评审（总体结论 / 五面小结 / 材料与筛选 / 问题清单 / 待复核）
+  ├─ findings[]           逐条评审意见（aspect / category / severity / quote / location / evidence / status）
+  ├─ aspect_coverage[]    五个面逐一 checked / checked_no_issue / gap
+  ├─ severity_rubric      precheck 阶段声明的严重度分级
+  └─ retrieval_scope      criteria[] / screening_log[] / flow（算术闭合）/ applied_protocol
+```
 
 本 Skill 的新颖度是**批内有界**的词项重叠判断，不是查新、专利检索或专家评审的替代品。
 
@@ -39,7 +48,8 @@ description: Use when a research idea must be judged before funding or execution
 <input>/
   case.json        # 必需；缺失时按空输入处理，仍然 exit 0 并写出诚实状态
   task.md          # 可选；选题文本缺失时从中提取正文，并登记在 retrieval_scope.task_text_used
-  <其他材料>        # 只登记到 input_manifest（路径、字节、sha256 前 1MB），不用于比较判断
+  <其他材料>        # md/txt/csv/json 读为文本，pdf 用 pdftotext 转换；按 DOI/标题/文件名挂到记录，
+                   # 解析失败者列入 input_manifest.unparsed，其余登记到 input_manifest.files
 ```
 
 `case.json` 关键字段：
@@ -83,12 +93,12 @@ python3 /skills/weekly-skill/scripts/run_skill.py --input /input --work /app/wor
 | `case_id` | 与输入一致（缺失时为 `unknown`） |
 | `status` | `success` / `partial` / `insufficient_input` / `failed`，唯一枚举 |
 | `result` | 业务结果对象（见下表） |
-| `evidence[]` | `kind`、`source_id`、`locator`、`quote`、`quote_verified`、`truncated` |
-| `uncertainty[]` | `type` + `detail`，覆盖无选题、无先行研究、无资源、不可检验、标题-only 记录、批内有界 |
+| `evidence[]` | `evidence_id`、`kind`、`source_id`、`locator`、`case_locator`、`source_file`、`quote`、`quote_verified`、`truncated` |
+| `uncertainty[]` | `type` + `detail`，覆盖无选题、无先行研究、无资源、不可检验、标题-only 记录、无原文/原文未解析/未匹配、批内有界 |
 | `errors[]` | 输入或运行错误；无错误时为空数组 |
-| `stats` | 记录数、词项数、近邻工作数、blocker 数、检查数、冲突数等 |
-| `input_manifest[]` | 输入文件清单（相对路径、字节、sha256、哈希范围） |
-| `run` | 入口、是否联网、是否确定性、policy 版本（不写机器路径） |
+| `stats` | 记录数、去重数、纳入数、原文数、证据数、findings 数、已检查面数等 |
+| `input_manifest` | 对象：`files[]`（相对路径、字节、sha256、哈希范围）、`sources_found`、`source_files[]`、`unparsed[]`、`skipped[]` |
+| `run` | 入口、是否联网、是否确定性、是否读取原文、policy 版本（不写机器路径） |
 | `contract_notes` | `output_contract` 每个键的满足方式 |
 | `contract_extras` | `contract_shape`、`declared_keys`、`not_determinable_keys`、`aliases_applied`、`uninterpreted_input_keys` |
 | `output_contract_fields` | `provided`、`present`、`sources`、`not_determinable` |
@@ -98,6 +108,10 @@ python3 /skills/weekly-skill/scripts/run_skill.py --input /input --work /app/wor
 | 字段 | 内容 |
 |---|---|
 | `proposal` | 原样选题文本（归一化空白） |
+| `review_report` | 中文成文评审（≥200 字），含总体结论、五面小结、材料与筛选计数、问题清单、待复核、使用边界 |
+| `aspect_coverage[]` | 五个面各一行：`aspect`、`label`、`status`（`checked` / `checked_no_issue` / `gap`）、`findings`、`severity_max`、`note` |
+| `findings[]` | `finding_id`、`aspect`、`category`（`fact_error` / `insufficient_evidence` / `norm_issue` / `suggestion`）、`severity`、`quote`、`location`、`evidence`、`revision_suggestion`、`status`（`confirmed` / `pending`） |
+| `severity_rubric` | `levels[]`、`declared_at=precheck`、`category_enum`、`status_enum` |
 | `testable_form` | `restated`、`population_hint`、`intervention_terms`、`outcome_indicators`、`has_comparator`、`vague_terms`、`tests`（四个布尔值 + `is_falsifiable`） |
 | `novelty_assessment` | `score`、`level`、`best_overlap`、`close_works`、`scope` |
 | `prior_art_table[]` | 逐记录共享词项、共享短语、重叠度、关系类别 |
@@ -110,7 +124,7 @@ python3 /skills/weekly-skill/scripts/run_skill.py --input /input --work /app/wor
 | `research_gaps[]` | 批内的空白观察及其依据（不是领域空白） |
 | `risks[]` / `recommended_revisions[]` | 带类型与严重度的风险、可执行修改建议 |
 | `needs_human_confirmation[]` | `item`、`locator`、`reason`：需要全文或专家判断的事项 |
-| `retrieval_scope` | `query`、`query_basis`、`inclusion`、`exclusion`、`batch_size`、`screened_out`、`external_search` |
+| `retrieval_scope` | `query`、`query_basis`、`criteria[]`、`criteria_origin`、`screening_log[]`、`flow`（`identified/duplicates/unique/screened/excluded/included` + 闭合校验）、`applied_protocol`、`hits_per_query[]`（真实关键词命中）、`sources_found`、`source_files[]`、`unparsed_sources[]`、`coverage_gap[]` |
 | `scorecard` | 透明的启发式分值及权重说明，不用于资助或伦理决策 |
 | `method` / `limitations` / `change_log` | 判定规则、限制、本次处理步骤 |
 
@@ -122,20 +136,23 @@ python3 /skills/weekly-skill/scripts/run_skill.py --input /input --work /app/wor
 
 ## 处理流程
 
-1. **读取与盘点**：解析 `case.json`；汇总输入文件清单（哈希前缀、字节数），登记 `retrieval_scope` 的 `batch_size` 与筛除计数。
+1. **读取与盘点**：解析 `case.json`；递归读取输入目录下的 md/txt/csv/json（pdf 走 `pdftotext`），按 DOI、标题、文件名挂到记录；无法解析者记 `unparsed`。汇总 `input_manifest` 与 `batch_size`。
 2. **问题定义**：抽取干预动作、可测结局、人群线索与对照；未操作化词（`better`、`有效`、`显著` 等）列入 `testable_form.vague_terms`。
-3. **先行研究比较**：对每条记录计算「提案词项被记录覆盖的比例 + 共享二元短语加成」；按 `direct_overlap`（≥0.45）、`partial_overlap`（≥0.25）、`adjacent` 分档；缺摘要、无共享词、缺年份分别写 `not_comparable_reason`。
-4. **创新点判定**：对干预、结局、干预×结局组合、以及批内完全不出现的差异词逐条判定；`covered_by` 只列真实命中的 `source_id`，不宣称绝对新颖。
-5. **冲突证据**：在与结局词项相关的记录上检测正/负极性；相反记录成对保留，`resolution` 固定 `unresolved`，并列出 `checked` 记录及其极性。
-6. **可行性**：数据、样本量、时间、方法设备、伦理逐项检查；缺资源声明时只做部分检查并降级为 `partial`。
-7. **综合与交付**：由可检验性、批内新颖度、可行性与已覆盖创新陈述推出 `go` / `conditional_go` / `hold`，写条件与停止条件；同时给出 gaps、risks、revisions、`needs_human_confirmation`。
+3. **筛选与去重**：声明 `criteria[]`（用例给的，或派生的 I1/I2/X1/X2）、`applied_protocol`；按 DOI 或「归一化标题+年份」去重并记 `duplicate_of`；逐记录写 `screening_log[]`，`flow` 必须算术闭合。
+4. **先行研究比较**：对每条记录计算「提案词项被记录覆盖的比例 + 共享二元短语加成」；按 `direct_overlap`（≥0.45）、`partial_overlap`（≥0.25）、`adjacent` 分档；缺摘要、无共享词、缺年份分别写 `not_comparable_reason`。
+5. **创新点判定**：对干预、结局、干预×结局组合、以及批内完全不出现的差异词逐条判定；`covered_by` 只列真实命中的 `source_id`，不宣称绝对新颖。
+6. **冲突证据**：在与结局词项相关的记录上检测正/负极性；相反记录成对保留，`resolution` 固定 `unresolved`，并列出 `checked` 记录及其极性。
+7. **可行性**：数据、样本量、时间、方法设备、伦理逐项检查；缺资源声明时只做部分检查并降级为 `partial`。
+8. **评审成文**：由 `prior_art_table` / `innovation_checks` / `feasibility.blockers` 派生 `findings[]`，用 precheck 声明的 `severity_rubric` 定级，逐面写 `aspect_coverage[]`，再生成 `review_report`。
+9. **综合与交付**：由可检验性、批内新颖度、可行性与已覆盖创新陈述推出 `go` / `conditional_go` / `hold`，写条件与停止条件；同时给出 gaps、risks、revisions、`needs_human_confirmation`，并写 `report.md`、`evidence.csv`、`screening_log.csv`、`provenance.json`。
 
 阈值与上限由 `assets/policy.json` 提供（重叠阈值、引文长度、比较行数、清单上限），脚本缺省值与之相同。
 
 ## 证据要求
 
-- `evidence` 每条含 `source_id`、`locator`（输入 JSON Pointer，如 `/prior_art/0`；选题为 `/proposal` 或 `/research_question`）、`quote`。
-- `quote` 必须是所引字段的**精确子串**；超长时截取前缀并置 `truncated=true`，`quote_verified` 记录子串校验结果。
+- `evidence` 每条含 `source_id`、`locator`、`quote`。`locator` 两种形态：`/prior_art/0`（`case.json` 的 JSON Pointer，选题为 `/proposal`）或 `S1#P2`（输入目录下第 1 份已解析源文件的第 2 段）；`case_locator` 始终保留 JSON Pointer 以便回溯。
+- `quote` 必须是所引文本的**精确子串**；超长时截取前缀并置 `truncated=true`，`quote_verified` 记录子串校验结果。
+- 源文件匹配按 DOI → 标题归一化子串 → 文件名词项重叠 → 文件名相似度依次尝试；未匹配者仍可用标题/摘要出证，但 locator 退回 JSON Pointer 并在 `findings` / `uncertainty` 中标注。
 - `comparison`、`innovation_checks`、`conflicting_evidence` 中出现的 `source_id` 必须能在输入记录中找到。
 - 没有来源的判断（需要读全文、需要专家裁决、需要补资源声明）只能写进 `needs_human_confirmation`，不得伪装成材料事实。
 - 不编造文献、年份、DOI、样本量、伦理批号或效应量；不把「批内没检索到」写成「尚无人研究」。
@@ -155,6 +172,9 @@ python3 /skills/weekly-skill/scripts/run_skill.py --input /input --work /app/wor
 | 样本量不足或数据缺失 | 记 `blocker` | `feasibility.blockers` |
 | 涉及人或动物但无伦理声明 | 记 `warning` | `feasibility.checks[].check=ethics` |
 | 记录结论相反 | 并列保留，不裁决 | `conflicting_evidence[].resolution=unresolved` |
+| 源文件 pdf 但无 `pdftotext` | 该文件标 `unparsed`，不臆造正文 | `input_manifest.unparsed[].reason=pdftotext_unavailable` |
+| 源文件解析失败或超限 | 记 `unparsed`（`read_failed` / `file_too_large` / `empty_text`），证据留在题录级 | `input_manifest.unparsed[]` |
+| 记录未匹配到源文件 | 用标题/摘要出证，locator 为 JSON Pointer | `findings[].aspect=evidence_traceback`，`uncertainty.type=source_unmatched` |
 | 输出目录不可写 | 回退到 `--work`；仍失败只向 stderr 报错 | 退出码仍为 0 |
 | 未知契约键 | 结构化 `not_determinable` 对象 + `contract_extras` | 顶层键不缺 |
 
@@ -165,7 +185,8 @@ python3 /skills/weekly-skill/scripts/run_skill.py --input /input --work /app/wor
 - 冲突检测依赖标题/摘要中的极性线索，不能替代全文方法学评价。
 - 分值为启发式透明分值，不得用于资助、伦理、人事或发表决策。
 - 不生成实验方案、样本量计算、预算或统计分析计划。
-- 除 case 记录外不解析其他材料文件，也不访问网络。
+- 只解析输入目录下的 md/txt/csv/json 与可转换的 pdf；扫描件、加密 pdf 与图片不做 OCR。
+- 不访问网络。
 
 ## 最小示例（示例，非正式案例结果）
 
@@ -173,20 +194,25 @@ python3 /skills/weekly-skill/scripts/run_skill.py --input /input --work /app/wor
 python3 scripts/sk_entry.py --input examples/demo-case --work /tmp/demo-work --out /tmp/demo-out
 ```
 
-演示输入是**合成数据**（`examples/demo-case/case.json`）：1 条选题、3 条先行研究（A1 支持、A2 相反、A3 无摘要无年份）、1 份完整资源声明、10 个 `output_contract` 键。预期：
+演示输入是**合成数据**（`examples/demo-case/case.json` + `sources/` 下 2 份玩具原文）：1 条选题、3 条先行研究（A1 支持、A2 相反、A3 无摘要无年份且无原文）、1 份完整资源声明、10 个 `output_contract` 键。预期：
 
 - `status=success`，`case_id=demo-proposal-001`；
+- `input_manifest.sources_found=2`，A1/A2 的 `evidence.locator` 为 `S1#P1` / `S2#P1`，A3 退回 `/prior_art/2`；
+- `retrieval_scope.flow` 为 identified=3、duplicates=0、unique=3、screened=3、included=3，且 `arithmetic_closure=true`；
 - `comparison` 3 行，A3 带 `not_comparable_reason`；
 - `conflicting_evidence` 至少 1 组（A1 阳性 vs A2 阴性，`resolution=unresolved`）；
 - `synthesis.verdict=conditional_go`（批内新颖度低）；
+- `review_report` ≥200 字，`aspect_coverage` 5 行，`findings` 按 precheck 分级；
 - 10 个契约键全部位于顶层，`not_determinable` 为空。
+- 输出目录另有 `report.md`、`evidence.csv`、`screening_log.csv`、`provenance.json`；`examples/demo-case/example-result.json` 是一次真实运行留存（标注 TOY）。
 
 示意输出（截断）：
 
 ```json
 {"status": "success", "case_id": "demo-proposal-001",
  "result": {"synthesis": {"verdict": "conditional_go"},
-            "conflicting_evidence": [{"resolution": "unresolved: both directions are kept ..."}]}}
+            "conflicting_evidence": [{"resolution": "unresolved: both directions are kept ..."}],
+            "aspect_coverage": [{"aspect": "evidence_traceback", "status": "checked"}]}}
 ```
 
 完整数值以实际运行为准；示例不代表任何平台固定案例结果。运行说明见 `examples/quickstart.md`。
@@ -197,7 +223,9 @@ python3 scripts/sk_entry.py --input examples/demo-case --work /tmp/demo-work --o
 - [ ] `case_id` 与输入一致；`status` 只取四个枚举，且与 `uncertainty`、`research_gaps` 自洽。
 - [ ] `output_contract` 每个键都在顶层，值不是 `null`/`pending`/`TODO`；无法产出者带 `status=not_determinable` 与原因。
 - [ ] 四类交付（`testable_form`、`comparison`、`innovation_checks`、`feasibility`）都有实质内容，不是占位骨架。
-- [ ] 每条 `evidence` 的 `quote` 能在 `locator` 指向的字段中逐字找到（`quote_verified=true`）。
+- [ ] 每条 `evidence` 的 `quote` 能在 `locator` 指向的文本中逐字找到（`quote_verified=true`）；`S1#P2` 与 `case_locator` 均可回溯。
+- [ ] `retrieval_scope.flow.arithmetic_closure=true`，`screening_log` 行数等于 `flow.identified`。
+- [ ] `review_report` ≥200 字，`aspect_coverage` 五行齐全且状态只取 `checked` / `checked_no_issue` / `gap`。
 - [ ] 冲突记录双方 `quote` 与 `locator` 均存在，`resolution` 未被改成单边结论。
 - [ ] 未支持判断都在 `needs_human_confirmation`，没有伪装成材料事实。
 - [ ] 重复运行两次，`result.json` 内容一致；包内无 `__pycache__`、无符号链接、无令牌或密钥。
